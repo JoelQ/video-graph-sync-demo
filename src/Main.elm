@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Http
+import Plot
 import Json.Decode as JD exposing (Decoder)
 
 
@@ -24,7 +25,7 @@ main =
 
 
 type alias Point =
-    { x : Int, y : Int }
+    { x : Float, y : Float }
 
 
 type alias Stream =
@@ -44,7 +45,7 @@ initialModel =
 
 pointDecoder : Decoder Point
 pointDecoder =
-    JD.map2 Point (JD.field "x" JD.int) (JD.field "y" JD.int)
+    JD.map2 Point (JD.field "x" JD.float) (JD.field "y" JD.float)
 
 
 streamDecoder : String -> Decoder Stream
@@ -108,4 +109,26 @@ view model =
 
 viewStream : Stream -> Html a
 viewStream stream =
-    h2 [] [ text stream.name ]
+    div []
+        [ h2 [] [ text stream.name ]
+        , dataPlot stream.points
+        ]
+
+
+defaultLine : Plot.Series (List Point) msg
+defaultLine =
+    Plot.line (List.map (\{ x, y } -> Plot.circle x y))
+
+
+config : Plot.PlotCustomizations msg
+config =
+    let
+        default =
+            Plot.defaultSeriesPlotCustomizations
+    in
+        { default | height = 100 }
+
+
+dataPlot : List Point -> Html a
+dataPlot points =
+    Plot.viewSeriesCustom config [ defaultLine ] points
