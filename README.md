@@ -1,13 +1,6 @@
-# Elm project
+# Video Graph Sync Demo
 
-## Getting started
+A quick demo to see how hard it would be render time-series graphs and live sync
+them with a video position. Built in 2 hours.
 
-You need to have [Elm](http://elm-lang.org/) 0.18 installed on your machine.
-
-Compile this project with:
-
-    elm make src/Main.elm
-
-Then view it:
-
-    elm reactor
+[Demo](https://joelq.github.io/video-graph-sync-demo/)
