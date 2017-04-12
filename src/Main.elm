@@ -53,19 +53,19 @@ streamDecoder name =
 
 fetchEda : Cmd Msg
 fetchEda =
-    Http.get "/eda.json" (streamDecoder "Eda")
+    Http.get "eda.json" (streamDecoder "Eda")
         |> Http.send ReceivedStream
 
 
 fetchStream2 : Cmd Msg
 fetchStream2 =
-    Http.get "/stream2.json" (streamDecoder "Stream 2")
+    Http.get "stream2.json" (streamDecoder "Stream 2")
         |> Http.send ReceivedStream
 
 
 fetchStream3 : Cmd Msg
 fetchStream3 =
-    Http.get "/stream3.json" (streamDecoder "Stream 3")
+    Http.get "stream3.json" (streamDecoder "Stream 3")
         |> Http.send ReceivedStream
 
 
