@@ -56,12 +56,24 @@ streamDecoder name =
 fetchEda : Cmd Msg
 fetchEda =
     Http.get "/eda.json" (streamDecoder "Eda")
-        |> Http.send ReceivedEda
+        |> Http.send ReceivedStream
+
+
+fetchStream2 : Cmd Msg
+fetchStream2 =
+    Http.get "/stream2.json" (streamDecoder "Stream 2")
+        |> Http.send ReceivedStream
+
+
+fetchStream3 : Cmd Msg
+fetchStream3 =
+    Http.get "/stream3.json" (streamDecoder "Stream 3")
+        |> Http.send ReceivedStream
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( initialModel, fetchEda )
+    ( initialModel, Cmd.batch [ fetchEda, fetchStream2, fetchStream3 ] )
 
 
 
@@ -70,7 +82,7 @@ init =
 
 type Msg
     = NoOp
-    | ReceivedEda (Result Http.Error Stream)
+    | ReceivedStream (Result Http.Error Stream)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -79,10 +91,10 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        ReceivedEda (Err message) ->
+        ReceivedStream (Err message) ->
             ( model, Cmd.none )
 
-        ReceivedEda (Ok stream) ->
+        ReceivedStream (Ok stream) ->
             ( { model | streams = stream :: model.streams }, Cmd.none )
 
 
