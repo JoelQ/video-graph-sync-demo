@@ -1,13 +1,11 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (src, width, controls)
+import Html.Events
 import Http
 import Plot
 import Json.Decode as JD exposing (Decoder)
-
-
---import Html.Attributes exposing (..)
---import Html.Events exposing (onClick)
 
 
 main : Program Never Model Msg
@@ -83,6 +81,7 @@ init =
 type Msg
     = NoOp
     | ReceivedStream (Result Http.Error Stream)
+    | TimeUpdated Float
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -96,6 +95,9 @@ update msg model =
 
         ReceivedStream (Ok stream) ->
             ( { model | streams = stream :: model.streams }, Cmd.none )
+
+        TimeUpdated time ->
+            ( { model | position = toFloat (round time) }, Cmd.none )
 
 
 
@@ -111,10 +113,27 @@ subscriptions model =
 -- VIEW
 
 
+onTimeUpdate : (Float -> msg) -> Html.Attribute msg
+onTimeUpdate msg =
+    Html.Events.on "timeupdate" (JD.map msg targetCurrentTime)
+
+
+targetCurrentTime : Decoder Float
+targetCurrentTime =
+    JD.at [ "target", "currentTime" ] JD.float
+
+
 view : Model -> Html Msg
 view model =
     main_ []
         [ h1 [] [ text "Video Graph Sync Demo" ]
+        , video
+            [ src "https://github.com/JoelQ/video-graph-sync-demo/blob/master/video.mp4?raw=true"
+            , width 500
+            , controls True
+            , onTimeUpdate TimeUpdated
+            ]
+            []
         , section [] (List.map (viewStream model.position) model.streams)
         ]
 
