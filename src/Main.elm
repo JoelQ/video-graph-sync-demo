@@ -35,7 +35,7 @@ type alias Stream =
 
 
 type alias Model =
-    { position : Int, streams : List Stream }
+    { position : Float, streams : List Stream }
 
 
 initialModel : Model
@@ -115,21 +115,33 @@ view : Model -> Html Msg
 view model =
     main_ []
         [ h1 [] [ text "Video Graph Sync Demo" ]
-        , section [] (List.map viewStream model.streams)
+        , section [] (List.map (viewStream model.position) model.streams)
         ]
 
 
-viewStream : Stream -> Html a
-viewStream stream =
+viewStream : Float -> Stream -> Html a
+viewStream scrubber stream =
     div []
         [ h2 [] [ text stream.name ]
-        , dataPlot stream.points
+        , dataPlot scrubber stream.points
         ]
 
 
-defaultLine : Plot.Series (List Point) msg
-defaultLine =
-    Plot.line (List.map (\{ x, y } -> Plot.circle x y))
+buildPoint : Float -> Point -> Plot.DataPoint msg
+buildPoint scrubber point =
+    let
+        basicPoint =
+            Plot.circle point.x point.y
+    in
+        if point.x == scrubber then
+            { basicPoint | xLine = Just Plot.simpleLine }
+        else
+            basicPoint
+
+
+defaultLine : Float -> Plot.Series (List Point) msg
+defaultLine scrubber =
+    Plot.line (List.map (buildPoint scrubber))
 
 
 config : Plot.PlotCustomizations msg
@@ -141,6 +153,6 @@ config =
         { default | height = 100 }
 
 
-dataPlot : List Point -> Html a
-dataPlot points =
-    Plot.viewSeriesCustom config [ defaultLine ] points
+dataPlot : Float -> List Point -> Html a
+dataPlot scrubber points =
+    Plot.viewSeriesCustom config [ defaultLine scrubber ] points
