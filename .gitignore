@@ -1,0 +1,9 @@
+# elm-package generated files
+elm-stuff/
+# elm-repl generated files
+repl-temp-*
+
+# Source files
+src/
+*.mp4
+*.md
